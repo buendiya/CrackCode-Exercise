@@ -16,7 +16,7 @@ typedef PtrToNode Position;
 
 void appendToTail(List L, int d)
 {
-	Position TmpCell = new struct Node;
+	Position TmpCell = (Position)malloc(sizeof(struct Node));
 	if (TmpCell == NULL)
 		return;
 	TmpCell->data = d;
@@ -27,6 +27,10 @@ void appendToTail(List L, int d)
 	L->next = TmpCell;
 }
 
+/*
+ * Return length of List.
+ * Assume use of a header node.
+ */
 int lengthOfList(List L)
 {
 	int length = 0;
@@ -54,7 +58,7 @@ Position find(List L, int d)
 
 /*
  * If d is not found, then next field of returned Position is NULL
- * Assume a header
+ * Assume use of a header node.
  */
 Position findPrevious(List L, int d)
 {
@@ -77,6 +81,7 @@ bool isLast(List L, Position p)
 
 /*
  * Delete first occurrence of d from a list.
+ * Assume use of a header node.
  */
 void deleteNode(List L, int d)
 {
@@ -91,6 +96,11 @@ void deleteNode(List L, int d)
 	}
 }
 
+/*
+ * Remove duplicates from an unsorted linked list.
+ * ¡°current¡± does a normal iteration,
+ * while ¡°runner¡± iterates through all prior nodes to check for dups.
+ */
 void removeDuplicates(List L)
 {
 	List current, previous, runner, tmpCell;
@@ -124,5 +134,58 @@ void removeDuplicates(List L)
 		}
 	}
 }
+
+/*
+ * Find the nth to last element of a singly linked list.
+ */
+Position nthToLast(List L, int n)
+{
+	Position p1 = L, p2 = L;
+
+	while (n-- > 0)		//skip n-1 head
+	{
+		if (p1 == NULL)
+			return NULL;	//not found since list size < n
+		p1 = p1->next;
+	}
+
+	while (p1->next != NULL)
+	{
+		p1 = p1->next;
+		p2 = p2->next;
+	}
+
+	return p2;
+}
+
+/*
+ * Add two numbers each represented by linked list and return the sum as a linked list.
+ */
+List addList(List L1, List L2, int carry)
+{
+	if (L1 == NULL && L2 == NULL)
+		return NULL;
+
+	List result = (List)malloc(sizeof(struct Node));
+	int value = carry;
+	if (L1 != NULL)
+		value += L1->data;
+	if (L2 != NULL)
+		value += L2->data;
+
+	result->data = value % 10;
+	List more = addList(L1 == NULL ? NULL : L1->next,
+						L2 == NULL ? NULL : L2->next,
+						value / 10);
+
+	result->next = more;
+	return result;
+}
+
+
+
+
+
+
 
 #endif
